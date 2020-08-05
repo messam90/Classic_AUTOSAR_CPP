@@ -15,6 +15,7 @@ class LinSM{
 public:
 	void ScheduleRequestConfirmation(NetworkHandleType network, LinIf::LinIf_SchHandleType ScheduleId);
 	void WakeupConfirmation(NetworkHandleType network, bool success);
+	void GotoSleepConfirmation(NetworkHandleType network, bool success);
 };
 }
 

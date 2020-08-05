@@ -4,7 +4,7 @@
  *  Created on: Mar 19, 2019
  *      Author: messam
  *
- *      Support: Master, Wakeup, Schedule Management, Unconditional Tx, Sporadic Tx, EventTriggered Rx (without collision resolving table)
+ *      Support: Master, Wakeup, Sleep, Schedule Management, Unconditional Tx, Sporadic Tx, EventTriggered Rx (without collision resolving table)
  */
 
 #ifndef LINIF_H_
@@ -30,6 +30,7 @@ private:
 	void ScheduleTableManager(const std::vector<LinIfChannel_t>::iterator & CurrentChannel, bool& ScheduleTableMgrReExec);
 	void ExecuteEntry(const ScheduleEntry_t& Entry, const std::vector<LinIfChannel_t>::iterator & CurrentChannel);
 	const UncoditionalFrame_t* GetUCFFromSlot(const ScheduleEntry_t& Entry);
+	void GoToSleepExec(const std::vector<LinIfChannel_t>::iterator & CurrentChannel);
 public:
 	using InitFnType = std::function<void(std::vector<LinIfChannel_t>&)>;
 	void Init(InitFnType Configure, std::shared_ptr<Lin::Lin> LinPtr,

@@ -23,6 +23,7 @@ enum class ScheduleChangePointType {NONE, NOW, ENTRY_END, SCHEDULE_END};
 enum class SlotType {UNCONDITIONAL, SPRADIC, EVENT_TRIGGERED};
 enum class ScheduleResumeType {START, LATEST_POINT};
 enum class LinIfInitType{UNINIT, INIT};
+enum class GoToSleepState{NONE, REQUEST, CHECK};
 /*
  * [SWS_LinIf_00441] [SWS_LinIf_00442]
  */
@@ -205,13 +206,17 @@ private:
 	ChannelStatusType Status{ChannelStatusType::LINIF_CHANNEL_SLEEP};
 	uint8_t CurrentEntryIndex{0};
 	uint8_t CurrentEntryPosition{0};
+	uint8_t SleepFrameDelay{0};
+	uint8_t SleepFrameDelayCounter{0};
 	bool ScheduleInterrupted{false};
 	bool CheckNeeded{false};
+	GoToSleepState GoToSleep{GoToSleepState::NONE};
 	PreviousScheduleType PreviousSchedule;
 	std::vector<uint8> DataBuffer;
 public:
-	LinIfChannel_t(uint8 Id){
+	LinIfChannel_t(uint8 Id, uint8_t SleepFrameDelay){
 		this->Id = Id;
+		this->SleepFrameDelay = SleepFrameDelay;
 		DataBuffer.resize(8);
 	}
 

@@ -18,7 +18,7 @@ namespace LinSM{
  */
 	enum class LinSMInitType{UNINIT, INIT};
 	enum class LinSM_ModeType{LINSM_NO_COM, LINSM_FULL_COM};
-	enum class FullComType{LINSM_RUN_COMMUNICATION, LINSM_GOTO_SLEEP};
+	enum class FullComType{LINSM_RUN_SCHEDULE, LINSM_GOTO_SLEEP};
 	enum class RequestType{SCHEDULE_SWITCH, WAKEUP, SLEEP, NONE};
 
 	class ScheduleTable{
@@ -39,7 +39,7 @@ namespace LinSM{
 	private:
 		LinSMInitType InitState{LinSMInitType::UNINIT};
 		LinSM_ModeType State{LinSM_ModeType::LINSM_NO_COM};
-		FullComType FullComState{FullComType::LINSM_RUN_COMMUNICATION};
+		FullComType FullComState{FullComType::LINSM_RUN_SCHEDULE};
 		LinIf::LinIf_SchHandleType RunningScheduleTable{0};
 		LinIf::LinIf_SchHandleType RequestedScheduleTable{0};
 		uint32 ConfiguredTimeoutValue;

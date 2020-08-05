@@ -214,6 +214,7 @@ void ComM::ChannelStateMachine(ChannelType& Channelref){
 				 * [SWS_ComM_00610]
 				 */
 				if(Channelref.NetworkManagement.TimerStarted && Channelref.NetworkManagement.CurrentTimer == 0){
+					Channelref.RequestedMode = ComM_ModeType::COMM_NO_COMMUNICATION;
 					ModeEntry(Channelref, ComM_ModeType::COMM_NO_COMMUNICATION);
 					Channelref.NetworkManagement.TimerStarted = false;
 				}

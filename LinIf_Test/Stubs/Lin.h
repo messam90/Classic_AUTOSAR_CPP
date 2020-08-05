@@ -36,6 +36,8 @@ class Lin{
 public:
 	Std_ReturnType SendFrame(uint8 Channel, const Lin_PduType* PduInfoPtr);
 	Lin_StatusType GetStatus(uint8 Channel,	uint8** Lin_SduPtr);
+	Std_ReturnType GoToSleep(uint8 Channel);
+	Std_ReturnType GoToSleepInternal(uint8 Channel);
 };
 }
 #endif /* STUBS_LIN_H_ */

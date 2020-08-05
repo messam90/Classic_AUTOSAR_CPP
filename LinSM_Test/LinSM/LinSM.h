@@ -4,7 +4,7 @@
  *  Created on: Mar 22, 2019
  *      Author: messam
  *
- *      Support: Master, Wakeup, Schedule requests, Timeouts
+ *      Support: Master, Wakeup, Sleep, Schedule requests, Timeouts
  */
 
 #ifndef LINSM_H_

@@ -40,4 +40,19 @@ Std_ReturnType LinIf::Wakeup(NetworkHandleType Channel){
 
 	return Return;
 }
+
+/*
+ * [SWS_LinIf_00204] [SWS_LinIf_00453]
+ */
+Std_ReturnType LinIf::GotoSleep(NetworkHandleType Channel){
+	Std_ReturnType Return = Std_ReturnType::E_OK;
+
+	if(Channel >= Channels.size()){
+		Return = Std_ReturnType::E_NOT_OK;
+	}else{
+		Channels[Channel].GoToSleep = GoToSleepState::REQUEST;
+	}
+
+	return Return;
+}
 }

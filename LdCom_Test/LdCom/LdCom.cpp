@@ -17,8 +17,8 @@ namespace LdCom{
 		this->AppPtr = AppPtr;
 	}
 
-	IpduType* LdCom::FindId(std::unordered_map<PduIdType, IpduType*> Map, PduIdType Id){
-		IpduType* IpduPtr = nullptr;
+	std::shared_ptr<IpduType> LdCom::FindId(std::unordered_map<PduIdType, std::shared_ptr<IpduType>> Map, PduIdType Id){
+		std::shared_ptr<IpduType>IpduPtr = nullptr;
 		auto It = Map.find(Id);
 		if(It != Map.end()){
 			IpduPtr = It->second;

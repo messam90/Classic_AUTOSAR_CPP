@@ -38,12 +38,12 @@
 		<link>
 			<name>Test/googlemock</name>
 			<type>2</type>
-			<locationURI>PARENT-2-PROJECT_LOC/googletest-master/googlemock</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/Lib/googlemock</locationURI>
 		</link>
 		<link>
 			<name>Test/googletest</name>
 			<type>2</type>
-			<locationURI>PARENT-2-PROJECT_LOC/googletest-master/googletest</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/Lib/googletest</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

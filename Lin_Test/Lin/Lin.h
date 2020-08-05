@@ -41,6 +41,8 @@ enum class Lin_StatusType {LIN_NOT_OK, LIN_TX_OK, LIN_TX_BUSY, LIN_TX_HEADER_ERR
 
 enum class Lin_FrameCsModelType{LIN_ENHANCED_CS, LIN_CLASSIC_CS};
 enum class Lin_FrameResponseType{LIN_FRAMERESPONSE_TX, LIN_FRAMERESPONSE_RX, LIN_FRAMERESPONSE_IGNORE};
+enum class LinStatus{NONE, TXFRAME, RXFRAME, SLEEP};
+
 typedef uint8 Lin_FrameDlType;
 
 typedef uint8 Lin_FramePidType;
@@ -61,13 +63,15 @@ struct Lin_PduType{
 	private:
 		Socket_t Socketobj;
 		LinConfig Config;
-		bool FrameSent{false};
+		LinStatus Status{LinStatus::NONE};
 
 	public:
 		using InitFnType = std::function<LinConfig()>;
 		void Init(InitFnType Configure);
 		Std_ReturnType SendFrame(uint8 Channel, const Lin_PduType* PduInfoPtr);
 		Lin_StatusType GetStatus(uint8 Channel,	uint8** Lin_SduPtr);
+		Std_ReturnType GoToSleep(uint8 Channel);
+		Std_ReturnType GoToSleepInternal(uint8 Channel);
 	};
 }
 

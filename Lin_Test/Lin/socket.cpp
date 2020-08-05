@@ -21,8 +21,8 @@ void Socket_t::InitConnection(const uint16_t Port, const in_addr_t IP, const Soc
 		SocketHandler = SocketFD;
 	}else{
 		int opt = 1;
-		CheckError(setsockopt(SocketFD, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT,
-	                                                  &opt, sizeof(opt)), "setsockopt error, exiting");
+		/*CheckError(setsockopt(SocketFD, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT,
+	                                                  &opt, sizeof(opt)), "setsockopt error, exiting");*/
 		CheckError(bind(SocketFD, (struct sockaddr*) &addr, sizeof(addr)), "Could not bing socket to address, exiting...");
 		CheckError(listen(SocketFD, 3), "Could not listen to socket, exiting...");
 		socklen_t length = sizeof(addr);

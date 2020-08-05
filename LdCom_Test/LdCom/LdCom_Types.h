@@ -12,8 +12,10 @@
 #include <functional>
 #include <vector>
 #include <unordered_map>
+#include <memory>
 
 namespace LdCom{
+	class LdCom;
 	enum class DirectionType{TRANSMIT, RECEIVE};
 	using RxIndicationType = std::function<void(const PduInfoType&)>;
 	using TxConfirmationType = std::function<void(Std_ReturnType)>;
@@ -47,18 +49,18 @@ namespace LdCom{
 
 	class IpdusType{
 	private:
-		std::vector<IpduType> TxIpdus;
-		std::vector<IpduType> RxIpdus;
-		std::unordered_map<PduIdType, IpduType*> TxIpdusMap;
-		std::unordered_map<PduIdType, IpduType*> RxIpdusMap;
+		std::vector<std::shared_ptr<IpduType>> TxIpdus;
+		std::vector<std::shared_ptr<IpduType>> RxIpdus;
+		std::unordered_map<PduIdType, std::shared_ptr<IpduType>> TxIpdusMap;
+		std::unordered_map<PduIdType, std::shared_ptr<IpduType>> RxIpdusMap;
 	public:
-		void AddIpdu(const IpduType& Ipdu){
-			if(Ipdu.Direction == DirectionType::TRANSMIT){
+		void AddIpdu(const std::shared_ptr<IpduType> Ipdu){
+			if(Ipdu->Direction == DirectionType::TRANSMIT){
 				TxIpdus.push_back(Ipdu);
-				TxIpdusMap.insert(std::make_pair(Ipdu.Id, &TxIpdus.back()));
+				TxIpdusMap.insert(std::make_pair(Ipdu->Id, Ipdu));
 			}else{
 				RxIpdus.push_back(Ipdu);
-				RxIpdusMap.insert(std::make_pair(Ipdu.Id, &RxIpdus.back()));
+				RxIpdusMap.insert(std::make_pair(Ipdu->Id, Ipdu));
 			}
 		}
 

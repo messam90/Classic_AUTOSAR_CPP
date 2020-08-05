@@ -16,7 +16,7 @@ namespace LinSM{
 	}
 
 	/*
-	 * [SWS_LinSM_00047] [SWS_LinSM_00176] [SWS_LinSM_00100] [SWS_LinSM_00103]
+	 * [SWS_LinSM_00047] [SWS_LinSM_00176] [SWS_LinSM_00100] [SWS_LinSM_00103] [SWS_LinSM_00035] [SWS_LinSM_10208] [SWS_LinSM_00036] [SWS_LinSM_00302 ]
 	 */
 	Std_ReturnType LinSM::RequestComMode(NetworkHandleType network, ComM::ComM_ModeType mode){
 		Std_ReturnType Return = Std_ReturnType::E_OK;
@@ -33,6 +33,13 @@ namespace LinSM{
 			if(mode != ComM::ComM_ModeType::COMM_NO_COMMUNICATION){
 				Return = LinIfPtr->Wakeup(network);
 				TempChannel.CurrentRequest = RequestType::WAKEUP;
+			}else{
+				if(TempChannel.State == LinSM_ModeType::LINSM_FULL_COM && TempChannel.FullComState == FullComType::LINSM_RUN_SCHEDULE){
+					Return = LinIfPtr->GotoSleep(network);
+					if(Return != Std_ReturnType::E_NOT_OK){
+						TempChannel.FullComState = FullComType::LINSM_GOTO_SLEEP;
+					}
+				}
 			}
 
 			if(Return != Std_ReturnType::E_OK){
@@ -50,14 +57,38 @@ namespace LinSM{
 	}
 
 	/*
+	 * [SWS_LinSM_00046]
+	 */
+	void LinSM::GotoSleepConfirmation(NetworkHandleType network, bool success){
+		Channel_t& TempChannel = Channels[network];
+		TempChannel.TimerRunning = false;
+		if(TempChannel.State == LinSM_ModeType::LINSM_FULL_COM && TempChannel.FullComState == FullComType::LINSM_GOTO_SLEEP){
+			if(success){
+				TempChannel.State = LinSM_ModeType::LINSM_NO_COM;
+
+				BswMPtr->LinSM_CurrentState(network, TempChannel.State);
+				ComMPtr->BusSM_ModeIndication(network, ComM::ComM_ModeType::COMM_NO_COMMUNICATION);
+			}else{
+				BswMPtr->LinSM_CurrentState(network, TempChannel.State);
+				ComM::ComM_ModeType Mode = ComM::ComM_ModeType::COMM_NO_COMMUNICATION;
+				if(TempChannel.State == LinSM_ModeType::LINSM_FULL_COM){
+					Mode = ComM::ComM_ModeType::COMM_FULL_COMMUNICATION;
+				}
+				ComMPtr->BusSM_ModeIndication(network, Mode);
+			}
+		}
+	}
+
+	/*
 	 * [SWS_LinSM_00049] [SWS_LinSM_00301] [SWS_LinSM_00154] [SWS_LinSM_00172] [SWS_LinSM_00178] [SWS_LinSM_00202]
 	 */
 	void LinSM::WakeupConfirmation(NetworkHandleType network, bool success){
 		Channel_t& TempChannel = Channels[network];
+		TempChannel.TimerRunning = false;
 		if(success != false){
 			if(TempChannel.CurrentTimeoutValue != 0){
 				TempChannel.State = LinSM_ModeType::LINSM_FULL_COM;
-				TempChannel.FullComState = FullComType::LINSM_RUN_COMMUNICATION;
+				TempChannel.FullComState = FullComType::LINSM_RUN_SCHEDULE;
 
 				ComM::ComM_ModeType Mode = ComM::ComM_ModeType::COMM_NO_COMMUNICATION;
 				if(TempChannel.State != LinSM_ModeType::LINSM_NO_COM){
@@ -66,8 +97,6 @@ namespace LinSM{
 
 				ComMPtr->BusSM_ModeIndication(network, Mode);
 				BswMPtr->LinSM_CurrentState(network, TempChannel.State);
-
-				TempChannel.TimerRunning = false;
 			}
 		}else{
 			ComM::ComM_ModeType Mode = ComM::ComM_ModeType::COMM_NO_COMMUNICATION;

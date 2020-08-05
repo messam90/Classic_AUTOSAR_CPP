@@ -21,7 +21,7 @@ namespace LdCom{
 		std::shared_ptr<PduR::PduR> PduRPtr;
 		std::shared_ptr<App::App> AppPtr;
 		IpdusType AllIpdus;
-		IpduType* FindId(std::unordered_map<PduIdType, IpduType*> Map, PduIdType Id);
+		std::shared_ptr<IpduType> FindId(std::unordered_map<PduIdType, std::shared_ptr<IpduType>> Map, PduIdType Id);
 	public:
 		using InitFnType = std::function<IpdusType()>;
 		void Init(InitFnType Configure, std::shared_ptr<PduR::PduR> PduRPtr, std::shared_ptr<App::App> AppPtr);

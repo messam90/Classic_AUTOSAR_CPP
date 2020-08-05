@@ -23,7 +23,7 @@ std::shared_ptr<Lin::Lin> LinPtr;
 SlotType Slot;
 
 void Configure(std::vector<LinIfChannel_t>& Channels){
-	LinIfChannel_t Channel(0);
+	LinIfChannel_t Channel(0, 2);
 
 	if(Slot == SlotType::UNCONDITIONAL){
 		UncoditionalFrame_t UCF(0, 0, 8, Lin::Lin_FrameCsModelType::LIN_ENHANCED_CS, Lin::Lin_FrameResponseType::LIN_FRAMERESPONSE_TX);
@@ -86,12 +86,12 @@ protected:
 TEST_F(LINIF, NULL_REQUEST_CONTINOUS_RUNNING){
 	Slot = SlotType::UNCONDITIONAL;
 	LinIfPtr->Init(Configure, LinPtr, LinSMPtr, PduRPtr);
-	EXPECT_CALL(*LinSMMockPtr, LinSM_WakeupConfirmation(0, true));
+	EXPECT_CALL(*LinSMMockPtr, WakeupConfirmation(0, true));
 	LinIfPtr->Wakeup(0);
 	LinIfPtr->ScheduleRequest(0, 1);
 	std::vector<uint8> Expected(8, 250);
-	EXPECT_CALL(*LinSMMockPtr, LinSM_ScheduleRequestConfirmation(0, 1));
-	EXPECT_CALL(*PdurMockPtr, PduR_LinIfTriggerTransmit(0,_));
+	EXPECT_CALL(*LinSMMockPtr, ScheduleRequestConfirmation(0, 1));
+	EXPECT_CALL(*PdurMockPtr, LinIfTriggerTransmit(0,_));
 	EXPECT_CALL(*LinMockPtr, SendFrame(0, Expected));
 	LinIfPtr->MainFunction();
 
@@ -101,8 +101,8 @@ TEST_F(LINIF, NULL_REQUEST_CONTINOUS_RUNNING){
 	LinIfPtr->MainFunction();
 
 	EXPECT_CALL(*LinMockPtr, GetStatus(_, _)).WillOnce(Return(Lin::Lin_StatusType::LIN_TX_OK));
-	EXPECT_CALL(*PdurMockPtr, PduR_LinIfTxConfirmation(_, Std_ReturnType::E_OK));
-	EXPECT_CALL(*LinSMMockPtr, LinSM_ScheduleRequestConfirmation(0, 0));
+	EXPECT_CALL(*PdurMockPtr, LinIfTxConfirmation(_, Std_ReturnType::E_OK));
+	EXPECT_CALL(*LinSMMockPtr, ScheduleRequestConfirmation(0, 0));
 	LinIfPtr->MainFunction();
 }
 
@@ -113,11 +113,11 @@ TEST_F(LINIF, NULL_REQUEST_CONTINOUS_RUNNING){
 TEST_F(LINIF, NULL_REQUEST_ONCE_RUNNING){
 	Slot = SlotType::UNCONDITIONAL;
 	LinIfPtr->Init(Configure, LinPtr, LinSMPtr, PduRPtr);
-	EXPECT_CALL(*LinSMMockPtr, LinSM_WakeupConfirmation(0, true));
+	EXPECT_CALL(*LinSMMockPtr, WakeupConfirmation(0, true));
 	LinIfPtr->Wakeup(0);
 	LinIfPtr->ScheduleRequest(0, 2);
-	EXPECT_CALL(*LinSMMockPtr, LinSM_ScheduleRequestConfirmation(0, 2));
-	EXPECT_CALL(*PdurMockPtr, PduR_LinIfTriggerTransmit(0,_));
+	EXPECT_CALL(*LinSMMockPtr, ScheduleRequestConfirmation(0, 2));
+	EXPECT_CALL(*PdurMockPtr, LinIfTriggerTransmit(0,_));
 	EXPECT_CALL(*LinMockPtr, SendFrame(0, _));
 	LinIfPtr->MainFunction();
 
@@ -127,8 +127,8 @@ TEST_F(LINIF, NULL_REQUEST_ONCE_RUNNING){
 	LinIfPtr->MainFunction();
 
 	EXPECT_CALL(*LinMockPtr, GetStatus(_, _)).WillOnce(Return(Lin::Lin_StatusType::LIN_TX_OK));
-	EXPECT_CALL(*PdurMockPtr, PduR_LinIfTxConfirmation(_, Std_ReturnType::E_OK));
-	EXPECT_CALL(*LinSMMockPtr, LinSM_ScheduleRequestConfirmation(0, 0));
+	EXPECT_CALL(*PdurMockPtr, LinIfTxConfirmation(_, Std_ReturnType::E_OK));
+	EXPECT_CALL(*LinSMMockPtr, ScheduleRequestConfirmation(0, 0));
 	LinIfPtr->MainFunction();
 }
 
@@ -139,11 +139,11 @@ TEST_F(LINIF, NULL_REQUEST_ONCE_RUNNING){
 TEST_F(LINIF, CONTINOUS_REQUEST_CONTINOUS_RUNNING){
 	Slot = SlotType::UNCONDITIONAL;
 	LinIfPtr->Init(Configure, LinPtr, LinSMPtr, PduRPtr);
-	EXPECT_CALL(*LinSMMockPtr, LinSM_WakeupConfirmation(0, true));
+	EXPECT_CALL(*LinSMMockPtr, WakeupConfirmation(0, true));
 	LinIfPtr->Wakeup(0);
 	LinIfPtr->ScheduleRequest(0, 1);
-	EXPECT_CALL(*LinSMMockPtr, LinSM_ScheduleRequestConfirmation(0, 1));
-	EXPECT_CALL(*PdurMockPtr, PduR_LinIfTriggerTransmit(0,_));
+	EXPECT_CALL(*LinSMMockPtr, ScheduleRequestConfirmation(0, 1));
+	EXPECT_CALL(*PdurMockPtr, LinIfTriggerTransmit(0,_));
 	EXPECT_CALL(*LinMockPtr, SendFrame(0, _));
 	LinIfPtr->MainFunction();
 
@@ -153,9 +153,9 @@ TEST_F(LINIF, CONTINOUS_REQUEST_CONTINOUS_RUNNING){
 	LinIfPtr->MainFunction();
 
 	EXPECT_CALL(*LinMockPtr, GetStatus(_, _)).WillOnce(Return(Lin::Lin_StatusType::LIN_TX_OK));
-	EXPECT_CALL(*PdurMockPtr, PduR_LinIfTxConfirmation(_, Std_ReturnType::E_OK));
-	EXPECT_CALL(*LinSMMockPtr, LinSM_ScheduleRequestConfirmation(0, 1));
-	EXPECT_CALL(*PdurMockPtr, PduR_LinIfTriggerTransmit(0,_));
+	EXPECT_CALL(*PdurMockPtr, LinIfTxConfirmation(_, Std_ReturnType::E_OK));
+	EXPECT_CALL(*LinSMMockPtr, ScheduleRequestConfirmation(0, 1));
+	EXPECT_CALL(*PdurMockPtr, LinIfTriggerTransmit(0,_));
 	EXPECT_CALL(*LinMockPtr, SendFrame(0, _));
 	LinIfPtr->MainFunction();
 }
@@ -167,11 +167,11 @@ TEST_F(LINIF, CONTINOUS_REQUEST_CONTINOUS_RUNNING){
 TEST_F(LINIF, CONTINOUS_REQUEST_ONCE_RUNNING){
 	Slot = SlotType::UNCONDITIONAL;
 	LinIfPtr->Init(Configure, LinPtr, LinSMPtr, PduRPtr);
-	EXPECT_CALL(*LinSMMockPtr, LinSM_WakeupConfirmation(0, true));
+	EXPECT_CALL(*LinSMMockPtr, WakeupConfirmation(0, true));
 	LinIfPtr->Wakeup(0);
 	LinIfPtr->ScheduleRequest(0, 2);
-	EXPECT_CALL(*LinSMMockPtr, LinSM_ScheduleRequestConfirmation(0, 2));
-	EXPECT_CALL(*PdurMockPtr, PduR_LinIfTriggerTransmit(0,_));
+	EXPECT_CALL(*LinSMMockPtr, ScheduleRequestConfirmation(0, 2));
+	EXPECT_CALL(*PdurMockPtr, LinIfTriggerTransmit(0,_));
 	EXPECT_CALL(*LinMockPtr, SendFrame(0, _));
 	LinIfPtr->MainFunction();
 
@@ -181,8 +181,8 @@ TEST_F(LINIF, CONTINOUS_REQUEST_ONCE_RUNNING){
 	LinIfPtr->MainFunction();
 
 	EXPECT_CALL(*LinMockPtr, GetStatus(_, _)).WillOnce(Return(Lin::Lin_StatusType::LIN_TX_OK));
-	EXPECT_CALL(*PdurMockPtr, PduR_LinIfTxConfirmation(_, Std_ReturnType::E_OK));
-	EXPECT_CALL(*PdurMockPtr, PduR_LinIfTriggerTransmit(1,_));
+	EXPECT_CALL(*PdurMockPtr, LinIfTxConfirmation(_, Std_ReturnType::E_OK));
+	EXPECT_CALL(*PdurMockPtr, LinIfTriggerTransmit(1,_));
 	EXPECT_CALL(*LinMockPtr, SendFrame(0, _));
 	LinIfPtr->MainFunction();
 
@@ -190,9 +190,9 @@ TEST_F(LINIF, CONTINOUS_REQUEST_ONCE_RUNNING){
 	LinIfPtr->MainFunction();
 
 	EXPECT_CALL(*LinMockPtr, GetStatus(_, _)).WillOnce(Return(Lin::Lin_StatusType::LIN_TX_OK));
-	EXPECT_CALL(*PdurMockPtr, PduR_LinIfTxConfirmation(_, Std_ReturnType::E_OK));
-	EXPECT_CALL(*LinSMMockPtr, LinSM_ScheduleRequestConfirmation(0, 1));
-	EXPECT_CALL(*PdurMockPtr, PduR_LinIfTriggerTransmit(0,_));
+	EXPECT_CALL(*PdurMockPtr, LinIfTxConfirmation(_, Std_ReturnType::E_OK));
+	EXPECT_CALL(*LinSMMockPtr, ScheduleRequestConfirmation(0, 1));
+	EXPECT_CALL(*PdurMockPtr, LinIfTriggerTransmit(0,_));
 	EXPECT_CALL(*LinMockPtr, SendFrame(0, _));
 	LinIfPtr->MainFunction();
 }
@@ -200,11 +200,11 @@ TEST_F(LINIF, CONTINOUS_REQUEST_ONCE_RUNNING){
 TEST_F(LINIF, ONCE_REQUEST_CONSTINOUS_RUNNING){
 	Slot = SlotType::UNCONDITIONAL;
 	LinIfPtr->Init(Configure, LinPtr, LinSMPtr, PduRPtr);
-	EXPECT_CALL(*LinSMMockPtr, LinSM_WakeupConfirmation(0, true));
+	EXPECT_CALL(*LinSMMockPtr, WakeupConfirmation(0, true));
 	LinIfPtr->Wakeup(0);
 	LinIfPtr->ScheduleRequest(0, 1);
-	EXPECT_CALL(*LinSMMockPtr, LinSM_ScheduleRequestConfirmation(0, 1));
-	EXPECT_CALL(*PdurMockPtr, PduR_LinIfTriggerTransmit(0,_));
+	EXPECT_CALL(*LinSMMockPtr, ScheduleRequestConfirmation(0, 1));
+	EXPECT_CALL(*PdurMockPtr, LinIfTriggerTransmit(0,_));
 	EXPECT_CALL(*LinMockPtr, SendFrame(0, _));
 	LinIfPtr->MainFunction();
 
@@ -214,27 +214,18 @@ TEST_F(LINIF, ONCE_REQUEST_CONSTINOUS_RUNNING){
 	LinIfPtr->MainFunction();
 
 	EXPECT_CALL(*LinMockPtr, GetStatus(_, _)).WillOnce(Return(Lin::Lin_StatusType::LIN_TX_OK));
-	EXPECT_CALL(*PdurMockPtr, PduR_LinIfTxConfirmation(0, Std_ReturnType::E_OK));
-	EXPECT_CALL(*PdurMockPtr, PduR_LinIfTriggerTransmit(0,_));
+	EXPECT_CALL(*PdurMockPtr, LinIfTxConfirmation(0, Std_ReturnType::E_OK));
+	EXPECT_CALL(*PdurMockPtr, LinIfTriggerTransmit(0,_));
 	EXPECT_CALL(*LinMockPtr, SendFrame(0, _));
-	EXPECT_CALL(*LinSMMockPtr, LinSM_ScheduleRequestConfirmation(0, 2));
+	EXPECT_CALL(*LinSMMockPtr, ScheduleRequestConfirmation(0, 2));
 	LinIfPtr->MainFunction();
 
 	LinIfPtr->MainFunction();
 	LinIfPtr->MainFunction();
 
 	EXPECT_CALL(*LinMockPtr, GetStatus(_, _)).WillOnce(Return(Lin::Lin_StatusType::LIN_TX_OK));
-	EXPECT_CALL(*PdurMockPtr, PduR_LinIfTxConfirmation(0, Std_ReturnType::E_OK));
-	EXPECT_CALL(*PdurMockPtr, PduR_LinIfTriggerTransmit(1,_));
-	EXPECT_CALL(*LinMockPtr, SendFrame(0, _));
-	LinIfPtr->MainFunction();
-
-	LinIfPtr->MainFunction();
-	LinIfPtr->MainFunction();
-
-	EXPECT_CALL(*LinMockPtr, GetStatus(_, _)).WillOnce(Return(Lin::Lin_StatusType::LIN_TX_OK));
-	EXPECT_CALL(*PdurMockPtr, PduR_LinIfTxConfirmation(1, Std_ReturnType::E_OK));
-	EXPECT_CALL(*PdurMockPtr, PduR_LinIfTriggerTransmit(0,_));
+	EXPECT_CALL(*PdurMockPtr, LinIfTxConfirmation(0, Std_ReturnType::E_OK));
+	EXPECT_CALL(*PdurMockPtr, LinIfTriggerTransmit(1,_));
 	EXPECT_CALL(*LinMockPtr, SendFrame(0, _));
 	LinIfPtr->MainFunction();
 
@@ -242,8 +233,17 @@ TEST_F(LINIF, ONCE_REQUEST_CONSTINOUS_RUNNING){
 	LinIfPtr->MainFunction();
 
 	EXPECT_CALL(*LinMockPtr, GetStatus(_, _)).WillOnce(Return(Lin::Lin_StatusType::LIN_TX_OK));
-	EXPECT_CALL(*PdurMockPtr, PduR_LinIfTxConfirmation(0, Std_ReturnType::E_OK));
-	EXPECT_CALL(*PdurMockPtr, PduR_LinIfTriggerTransmit(1,_));
+	EXPECT_CALL(*PdurMockPtr, LinIfTxConfirmation(1, Std_ReturnType::E_OK));
+	EXPECT_CALL(*PdurMockPtr, LinIfTriggerTransmit(0,_));
+	EXPECT_CALL(*LinMockPtr, SendFrame(0, _));
+	LinIfPtr->MainFunction();
+
+	LinIfPtr->MainFunction();
+	LinIfPtr->MainFunction();
+
+	EXPECT_CALL(*LinMockPtr, GetStatus(_, _)).WillOnce(Return(Lin::Lin_StatusType::LIN_TX_OK));
+	EXPECT_CALL(*PdurMockPtr, LinIfTxConfirmation(0, Std_ReturnType::E_OK));
+	EXPECT_CALL(*PdurMockPtr, LinIfTriggerTransmit(1,_));
 	EXPECT_CALL(*LinMockPtr, SendFrame(0, _));
 	LinIfPtr->MainFunction();
 
@@ -251,8 +251,8 @@ TEST_F(LINIF, ONCE_REQUEST_CONSTINOUS_RUNNING){
 	LinIfPtr->MainFunction();
 	//Schedule wrap around and execute from start
 	EXPECT_CALL(*LinMockPtr, GetStatus(_, _)).WillOnce(Return(Lin::Lin_StatusType::LIN_TX_OK));
-	EXPECT_CALL(*PdurMockPtr, PduR_LinIfTxConfirmation(1, Std_ReturnType::E_OK));
-	EXPECT_CALL(*PdurMockPtr, PduR_LinIfTriggerTransmit(0,_));
+	EXPECT_CALL(*PdurMockPtr, LinIfTxConfirmation(1, Std_ReturnType::E_OK));
+	EXPECT_CALL(*PdurMockPtr, LinIfTriggerTransmit(0,_));
 	EXPECT_CALL(*LinMockPtr, SendFrame(0, _));
 	LinIfPtr->MainFunction();
 }
@@ -260,11 +260,11 @@ TEST_F(LINIF, ONCE_REQUEST_CONSTINOUS_RUNNING){
 TEST_F(LINIF, ONCE_REQUEST){
 	Slot = SlotType::UNCONDITIONAL;
 	LinIfPtr->Init(Configure, LinPtr, LinSMPtr, PduRPtr);
-	EXPECT_CALL(*LinSMMockPtr, LinSM_WakeupConfirmation(0, true));
+	EXPECT_CALL(*LinSMMockPtr, WakeupConfirmation(0, true));
 	LinIfPtr->Wakeup(0);
 	LinIfPtr->ScheduleRequest(0, 2);
-	EXPECT_CALL(*LinSMMockPtr, LinSM_ScheduleRequestConfirmation(0, 2));
-	EXPECT_CALL(*PdurMockPtr, PduR_LinIfTriggerTransmit(0,_));
+	EXPECT_CALL(*LinSMMockPtr, ScheduleRequestConfirmation(0, 2));
+	EXPECT_CALL(*PdurMockPtr, LinIfTriggerTransmit(0,_));
 	EXPECT_CALL(*LinMockPtr, SendFrame(0, _));
 	LinIfPtr->MainFunction();
 
@@ -272,8 +272,8 @@ TEST_F(LINIF, ONCE_REQUEST){
 	LinIfPtr->MainFunction();
 
 	EXPECT_CALL(*LinMockPtr, GetStatus(_, _)).WillOnce(Return(Lin::Lin_StatusType::LIN_TX_OK));
-	EXPECT_CALL(*PdurMockPtr, PduR_LinIfTxConfirmation(0, Std_ReturnType::E_OK));
-	EXPECT_CALL(*PdurMockPtr, PduR_LinIfTriggerTransmit(1,_));
+	EXPECT_CALL(*PdurMockPtr, LinIfTxConfirmation(0, Std_ReturnType::E_OK));
+	EXPECT_CALL(*PdurMockPtr, LinIfTriggerTransmit(1,_));
 	EXPECT_CALL(*LinMockPtr, SendFrame(0, _));
 	LinIfPtr->MainFunction();
 
@@ -281,7 +281,7 @@ TEST_F(LINIF, ONCE_REQUEST){
 	LinIfPtr->MainFunction();
 
 	EXPECT_CALL(*LinMockPtr, GetStatus(_, _)).WillOnce(Return(Lin::Lin_StatusType::LIN_TX_OK));
-	EXPECT_CALL(*PdurMockPtr, PduR_LinIfTxConfirmation(1, Std_ReturnType::E_OK));
+	EXPECT_CALL(*PdurMockPtr, LinIfTxConfirmation(1, Std_ReturnType::E_OK));
 	LinIfPtr->MainFunction(); //should switch automatically to null
 
 	LinIfPtr->MainFunction();
@@ -296,14 +296,14 @@ TEST_F(LINIF, ONCE_REQUEST){
 TEST_F(LINIF, SPORADIC_TX){
 	Slot = SlotType::SPRADIC;
 	LinIfPtr->Init(Configure, LinPtr, LinSMPtr, PduRPtr);
-	EXPECT_CALL(*LinSMMockPtr, LinSM_WakeupConfirmation(0, true));
+	EXPECT_CALL(*LinSMMockPtr, WakeupConfirmation(0, true));
 	LinIfPtr->Wakeup(0);
 	LinIfPtr->ScheduleRequest(0, 1);
 	std::vector<uint8> Data(8, 1);
 	PduInfoType Temp{Data, (uint16)Data.size()};
 	LinIfPtr->Transmit(3, Temp);
-	EXPECT_CALL(*LinSMMockPtr, LinSM_ScheduleRequestConfirmation(0, 1));
-	EXPECT_CALL(*PdurMockPtr, PduR_LinIfTriggerTransmit(2,_));
+	EXPECT_CALL(*LinSMMockPtr, ScheduleRequestConfirmation(0, 1));
+	EXPECT_CALL(*PdurMockPtr, LinIfTriggerTransmit(2,_));
 	EXPECT_CALL(*LinMockPtr, SendFrame(0, _));
 	LinIfPtr->MainFunction();
 }
@@ -314,10 +314,10 @@ TEST_F(LINIF, SPORADIC_TX){
 TEST_F(LINIF, EVENT_TRIGGERED){
 	Slot = SlotType::EVENT_TRIGGERED;
 	LinIfPtr->Init(Configure, LinPtr, LinSMPtr, PduRPtr);
-	EXPECT_CALL(*LinSMMockPtr, LinSM_WakeupConfirmation(0, true));
+	EXPECT_CALL(*LinSMMockPtr, WakeupConfirmation(0, true));
 	LinIfPtr->Wakeup(0);
 	LinIfPtr->ScheduleRequest(0, 1);
-	EXPECT_CALL(*LinSMMockPtr, LinSM_ScheduleRequestConfirmation(0, 1));
+	EXPECT_CALL(*LinSMMockPtr, ScheduleRequestConfirmation(0, 1));
 	EXPECT_CALL(*LinMockPtr, SendFrame(0, _));
 	LinIfPtr->MainFunction();
 
@@ -326,7 +326,7 @@ TEST_F(LINIF, EVENT_TRIGGERED){
 
 	uint8 Data[8] = {1,1,1,1,1,1,1,1};
 	EXPECT_CALL(*LinMockPtr, GetStatus(_, _)).WillOnce(DoAll(SetArgPointee<1>(&Data[0]), Return(Lin::Lin_StatusType::LIN_RX_OK)));
-	EXPECT_CALL(*PdurMockPtr, PduR_LinIfRxIndication(3, _));
+	EXPECT_CALL(*PdurMockPtr, LinIfRxIndication(3, _));
 	LinIfPtr->MainFunction();
 }
 
@@ -336,7 +336,7 @@ TEST_F(LINIF, EVENT_TRIGGERED){
 TEST_F(LINIF, WAKEUP_SUCCESS){
 	Slot = SlotType::EVENT_TRIGGERED;
 	LinIfPtr->Init(Configure, LinPtr, LinSMPtr, PduRPtr);
-	EXPECT_CALL(*LinSMMockPtr, LinSM_WakeupConfirmation(0, true));
+	EXPECT_CALL(*LinSMMockPtr, WakeupConfirmation(0, true));
 	LinIfPtr->Wakeup(0);
 }
 
@@ -346,6 +346,69 @@ TEST_F(LINIF, WAKEUP_SUCCESS){
 TEST_F(LINIF, WAKEUP_FAIL){
 	Slot = SlotType::EVENT_TRIGGERED;
 	LinIfPtr->Init(Configure, LinPtr, LinSMPtr, PduRPtr);
-	EXPECT_CALL(*LinSMMockPtr, LinSM_WakeupConfirmation(1, false));
+	EXPECT_CALL(*LinSMMockPtr, WakeupConfirmation(1, false));
 	LinIfPtr->Wakeup(1);
+}
+
+/*
+ * [SWS_LinIf_00453] [SWS_LinIf_00455] [SWS_LinIf_00557] [SWS_LinIf_00293]
+ */
+TEST_F(LINIF, WAKEUP_SLEEP_SUCCESS){
+	Slot = SlotType::UNCONDITIONAL;
+	LinIfPtr->Init(Configure, LinPtr, LinSMPtr, PduRPtr);
+	EXPECT_CALL(*LinSMMockPtr, WakeupConfirmation(0, true));
+	LinIfPtr->Wakeup(0);
+	LinIfPtr->ScheduleRequest(0, 1);
+	EXPECT_CALL(*LinSMMockPtr, ScheduleRequestConfirmation(0, 1));
+	EXPECT_CALL(*PdurMockPtr, LinIfTriggerTransmit(0,_));
+	EXPECT_CALL(*LinMockPtr, SendFrame(0, _));
+	LinIfPtr->MainFunction();
+
+	LinIfPtr->GotoSleep(0);
+	EXPECT_CALL(*LinMockPtr, GoToSleep(0)).WillOnce(Return(Std_ReturnType::E_OK));
+	LinIfPtr->MainFunction();
+	LinIfPtr->MainFunction();
+	EXPECT_CALL(*LinMockPtr, GetStatus(0, _)).WillOnce(Return(Lin::Lin_StatusType::LIN_CH_SLEEP));
+	EXPECT_CALL(*LinSMMockPtr, GotoSleepConfirmation(0, true));
+	LinIfPtr->MainFunction();
+	LinIfPtr->MainFunction();
+}
+
+/*
+ * [SWS_LinIf_00597] [SWS_LinIf_00557]
+ */
+TEST_F(LINIF, SLEEP_SLEEP_SUCCESS){
+	LinIfPtr->Init(Configure, LinPtr, LinSMPtr, PduRPtr);
+	LinIfPtr->GotoSleep(0);
+	EXPECT_CALL(*LinMockPtr, GoToSleepInternal(0)).WillOnce(Return(Std_ReturnType::E_OK));
+	EXPECT_CALL(*LinSMMockPtr, GotoSleepConfirmation(0, true));
+	LinIfPtr->MainFunction();
+}
+
+/*
+ * [SWS_LinIf_00454] [SWS_LinIf_00558]
+ */
+TEST_F(LINIF, SLEEP_FAILED){
+	LinIfPtr->Init(Configure, LinPtr, LinSMPtr, PduRPtr);
+	LinIfPtr->GotoSleep(0);
+	EXPECT_CALL(*LinMockPtr, GoToSleepInternal(0)).WillOnce(Return(Std_ReturnType::E_NOT_OK));
+	EXPECT_CALL(*LinSMMockPtr, GotoSleepConfirmation(0, false));
+	LinIfPtr->MainFunction();
+
+	EXPECT_CALL(*LinSMMockPtr, WakeupConfirmation(0, true));
+	LinIfPtr->Wakeup(0);
+	LinIfPtr->MainFunction();
+
+	LinIfPtr->GotoSleep(0);
+	EXPECT_CALL(*LinMockPtr, GoToSleep(0)).WillOnce(Return(Std_ReturnType::E_NOT_OK));
+	EXPECT_CALL(*LinSMMockPtr, GotoSleepConfirmation(0, false));
+	LinIfPtr->MainFunction();
+
+	LinIfPtr->GotoSleep(0);
+	EXPECT_CALL(*LinMockPtr, GoToSleep(0)).WillOnce(Return(Std_ReturnType::E_OK));
+	LinIfPtr->MainFunction();
+	LinIfPtr->MainFunction();
+	EXPECT_CALL(*LinMockPtr, GetStatus(0, _)).WillOnce(Return(Lin::Lin_StatusType::LIN_NOT_OK));
+	EXPECT_CALL(*LinSMMockPtr, GotoSleepConfirmation(0, false));
+	LinIfPtr->MainFunction();
 }

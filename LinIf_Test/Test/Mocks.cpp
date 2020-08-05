@@ -22,15 +22,15 @@ Std_ReturnType PduR::PduR::LinIfTriggerTransmit(PduIdType TxPduId, PduInfoType& 
 		PduInfoPtr.PduPtr[i] = 250;
 	}
 
-	return PdurMockPtr->PduR_LinIfTriggerTransmit(TxPduId, PduInfoPtr.PduPtr);
+	return PdurMockPtr->LinIfTriggerTransmit(TxPduId, PduInfoPtr.PduPtr);
 }
 
 void PduR::PduR::LinIfTxConfirmation(PduIdType TxPduId, Std_ReturnType result){
-	PdurMockPtr->PduR_LinIfTxConfirmation(TxPduId, result);
+	PdurMockPtr->LinIfTxConfirmation(TxPduId, result);
 }
 
 void PduR::PduR::LinIfRxIndication(PduIdType RxPduId, const PduInfoType& PduInfoPtr){
-	PdurMockPtr->PduR_LinIfRxIndication(RxPduId, PduInfoPtr.PduPtr);
+	PdurMockPtr->LinIfRxIndication(RxPduId, PduInfoPtr.PduPtr);
 }
 
 Std_ReturnType Lin::Lin::SendFrame(uint8 Channel, const Lin_PduType* PduInfoPtr){
@@ -41,12 +41,24 @@ Lin::Lin_StatusType Lin::Lin::GetStatus(uint8 Channel, uint8** Lin_SduPtr){
 	return LinMockPtr->GetStatus(Channel, Lin_SduPtr);
 }
 
+Std_ReturnType Lin::Lin::GoToSleep(uint8 Channel){
+	return LinMockPtr->GoToSleep(Channel);
+}
+
+Std_ReturnType Lin::Lin::GoToSleepInternal(uint8 Channel){
+	return LinMockPtr->GoToSleepInternal(Channel);
+}
+
 void LinSM::LinSM::ScheduleRequestConfirmation(NetworkHandleType network, LinIf::LinIf_SchHandleType ScheduleId){
-	LinSMMockPtr->LinSM_ScheduleRequestConfirmation(network, ScheduleId);
+	LinSMMockPtr->ScheduleRequestConfirmation(network, ScheduleId);
 }
 
 void LinSM::LinSM::WakeupConfirmation(NetworkHandleType network, bool success){
-	LinSMMockPtr->LinSM_WakeupConfirmation(network, success);
+	LinSMMockPtr->WakeupConfirmation(network, success);
+}
+
+void LinSM::LinSM::GotoSleepConfirmation(NetworkHandleType network, bool success){
+	LinSMMockPtr->GotoSleepConfirmation(network, success);
 }
 
 #endif /* TEST_MOCKS_CPP_ */

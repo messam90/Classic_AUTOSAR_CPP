@@ -32,19 +32,19 @@ class PDUR: public ::testing::Test{
 	}
 };
 
-PduR::RoutingPathsType Configure(){
-	PduR::IFRoutingPathType TxPath(0, 0, PduR::ModulesType::LDCOM, PduR::ModulesType::LINIF);
-	PduR::IFRoutingPathType RxPath(0, 0, PduR::ModulesType::LINIF, PduR::ModulesType::LDCOM);
+std::shared_ptr<PduR::RoutingPathsType> Configure(){
+	std::shared_ptr<PduR::IFRoutingPathType> TxPath = std::make_shared<PduR::IFRoutingPathType>(0, 0, PduR::ModulesType::LDCOM, PduR::ModulesType::LINIF);
+	std::shared_ptr<PduR::IFRoutingPathType> RxPath = std::make_shared<PduR::IFRoutingPathType>(0, 0, PduR::ModulesType::LINIF, PduR::ModulesType::LDCOM);
 
-	PduR::RoutingPathsType RoutingPaths;
-	RoutingPaths.AddRoutingPath(TxPath, PduR::RoutingDirection::TRANSMIT);
-	RoutingPaths.AddRoutingPath(RxPath, PduR::RoutingDirection::RECEIVE);
+	std::shared_ptr<PduR::RoutingPathsType> RoutingPathsPtr = std::make_shared<PduR::RoutingPathsType>();
+	RoutingPathsPtr->AddRoutingPath(TxPath, PduR::RoutingDirection::TRANSMIT);
+	RoutingPathsPtr->AddRoutingPath(RxPath, PduR::RoutingDirection::RECEIVE);
 
-	return RoutingPaths;
+	return RoutingPathsPtr;
 }
 
 TEST_F(PDUR, TRANSMIT){
-	PduRPtr->Init(Configure, LinIfPtr, LdComPtr);
+	PduRPtr->Init(LinIfPtr, nullptr, LdComPtr, Configure);
 	PduIdType PduId = 0;
 	std::vector<uint8> Data(8, 1);
 	PduInfoType PduInfo{Data, (uint16)Data.size()};
@@ -53,7 +53,7 @@ TEST_F(PDUR, TRANSMIT){
 }
 
 TEST_F(PDUR, TRIGGER_TRANSMIT){
-	PduRPtr->Init(Configure, LinIfPtr, LdComPtr);
+	PduRPtr->Init(LinIfPtr, nullptr, LdComPtr, Configure);
 	PduIdType PduId = 0;
 	std::vector<uint8> Data(8, 1);
 	PduInfoType PduInfo{Data, (uint16)Data.size()};
@@ -63,7 +63,7 @@ TEST_F(PDUR, TRIGGER_TRANSMIT){
 }
 
 TEST_F(PDUR, RECEIVE){
-	PduRPtr->Init(Configure, LinIfPtr, LdComPtr);
+	PduRPtr->Init(LinIfPtr, nullptr, LdComPtr, Configure);
 	PduIdType PduId = 0;
 	std::vector<uint8> Data(8, 1);
 	PduInfoType PduInfo{Data, (uint16)Data.size()};

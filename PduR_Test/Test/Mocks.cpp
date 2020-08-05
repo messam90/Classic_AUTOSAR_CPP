@@ -5,6 +5,7 @@
  *      Author: m
  */
 #include "Mocks.h"
+#include "CanIf.h"
 #include <memory>
 
 extern std::shared_ptr<LinIfMock> LinIfMockPtr;
@@ -25,4 +26,8 @@ void LdCom::LdCom::RxIndication(PduIdType RxPduId, const PduInfoType& PduInfoPtr
 Std_ReturnType LdCom::LdCom::TriggerTransmit(PduIdType TxPduId, PduInfoType& PduInfoPtr){
 	PduInfoPtr.PduPtr[1] = 250;
 	return LdComMockPtr->TriggerTransmit(TxPduId, PduInfoPtr.PduPtr);
+}
+
+Std_ReturnType CanIf::CanIf::Transmit(PduIdType TxPduId, const PduInfoType* PduInfoPtr){
+	return Std_ReturnType::E_OK;
 }

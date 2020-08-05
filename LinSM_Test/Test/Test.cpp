@@ -137,3 +137,62 @@ TEST_F(LINSM, WAKEUP_REQUEST_TIMEOUT){
 	EXPECT_CALL(*BswMMockPtr, LinSM_CurrentState(0, LinSM::LinSM_ModeType::LINSM_NO_COM));
 	LinSMPtr->MainFunction();
 }
+
+/*
+ * [SWS_LinSM_10208] [SWS_LinSM_00036]
+ */
+TEST_F(LINSM, SLEEP_REQUEST_SUCCESS){
+	LinSMPtr->Init(Configure, LinIfPtr, ComMPtr, BswMPtr);
+	EXPECT_CALL(*LinIfMockPtr, Wakeup(0)).WillOnce(Return(Std_ReturnType::E_OK));
+	ASSERT_EQ(LinSMPtr->RequestComMode(0, ComM::ComM_ModeType::COMM_FULL_COMMUNICATION), Std_ReturnType::E_OK);
+
+	EXPECT_CALL(*ComMMockPtr, BusSM_ModeIndication(0, ComM::ComM_ModeType::COMM_FULL_COMMUNICATION));
+	EXPECT_CALL(*BswMMockPtr, LinSM_CurrentState(0, LinSM::LinSM_ModeType::LINSM_FULL_COM));
+	LinSMPtr->WakeupConfirmation(0, true);
+
+	EXPECT_CALL(*LinIfMockPtr, GotoSleep(0)).WillOnce(Return(Std_ReturnType::E_OK));
+	ASSERT_EQ(LinSMPtr->RequestComMode(0, ComM::ComM_ModeType::COMM_NO_COMMUNICATION), Std_ReturnType::E_OK);
+	EXPECT_CALL(*ComMMockPtr, BusSM_ModeIndication(0, ComM::ComM_ModeType::COMM_NO_COMMUNICATION));
+	EXPECT_CALL(*BswMMockPtr, LinSM_CurrentState(0, LinSM::LinSM_ModeType::LINSM_NO_COM));
+	LinSMPtr->GotoSleepConfirmation(0, true);
+}
+
+/*
+ *
+ */
+TEST_F(LINSM, SLEEP_REQUEST_FAILED){
+	LinSMPtr->Init(Configure, LinIfPtr, ComMPtr, BswMPtr);
+	EXPECT_CALL(*LinIfMockPtr, Wakeup(0)).WillOnce(Return(Std_ReturnType::E_OK));
+	ASSERT_EQ(LinSMPtr->RequestComMode(0, ComM::ComM_ModeType::COMM_FULL_COMMUNICATION), Std_ReturnType::E_OK);
+
+	EXPECT_CALL(*ComMMockPtr, BusSM_ModeIndication(0, ComM::ComM_ModeType::COMM_FULL_COMMUNICATION));
+	EXPECT_CALL(*BswMMockPtr, LinSM_CurrentState(0, LinSM::LinSM_ModeType::LINSM_FULL_COM));
+	LinSMPtr->WakeupConfirmation(0, true);
+
+	EXPECT_CALL(*LinIfMockPtr, GotoSleep(0)).WillOnce(Return(Std_ReturnType::E_OK));
+	ASSERT_EQ(LinSMPtr->RequestComMode(0, ComM::ComM_ModeType::COMM_NO_COMMUNICATION), Std_ReturnType::E_OK);
+	EXPECT_CALL(*ComMMockPtr, BusSM_ModeIndication(0, ComM::ComM_ModeType::COMM_FULL_COMMUNICATION));
+	EXPECT_CALL(*BswMMockPtr, LinSM_CurrentState(0, LinSM::LinSM_ModeType::LINSM_FULL_COM));
+	LinSMPtr->GotoSleepConfirmation(0, false);
+}
+
+/*
+ *
+ */
+TEST_F(LINSM, SLEEP_REQUEST_TIMEOUT){
+	LinSMPtr->Init(Configure, LinIfPtr, ComMPtr, BswMPtr);
+	EXPECT_CALL(*LinIfMockPtr, Wakeup(0)).WillOnce(Return(Std_ReturnType::E_OK));
+	ASSERT_EQ(LinSMPtr->RequestComMode(0, ComM::ComM_ModeType::COMM_FULL_COMMUNICATION), Std_ReturnType::E_OK);
+
+	EXPECT_CALL(*ComMMockPtr, BusSM_ModeIndication(0, ComM::ComM_ModeType::COMM_FULL_COMMUNICATION));
+	EXPECT_CALL(*BswMMockPtr, LinSM_CurrentState(0, LinSM::LinSM_ModeType::LINSM_FULL_COM));
+	LinSMPtr->WakeupConfirmation(0, true);
+
+	EXPECT_CALL(*LinIfMockPtr, GotoSleep(0)).WillOnce(Return(Std_ReturnType::E_OK));
+	ASSERT_EQ(LinSMPtr->RequestComMode(0, ComM::ComM_ModeType::COMM_NO_COMMUNICATION), Std_ReturnType::E_OK);
+	LinSMPtr->MainFunction();
+
+	EXPECT_CALL(*ComMMockPtr, BusSM_ModeIndication(0, ComM::ComM_ModeType::COMM_FULL_COMMUNICATION));
+	EXPECT_CALL(*BswMMockPtr, LinSM_CurrentState(0, LinSM::LinSM_ModeType::LINSM_FULL_COM));
+	LinSMPtr->MainFunction();
+}

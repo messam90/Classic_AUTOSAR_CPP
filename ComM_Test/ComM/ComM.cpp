@@ -71,7 +71,7 @@ namespace ComM{
 
 	Std_ReturnType ComM::BusSMGetCurrentComMode(ChannelType& Channel, ComM_ModeType& Mode){
 		if(Channel.BusType == ComM_BusType::COMM_BUS_TYPE_CAN){
-			return CanSMPtr->GetCurrentComMode(Channel.SMId, Mode);
+			return CanSMPtr->GetCurrentComMode(Channel.SMId, &Mode);
 		}else if(Channel.BusType == ComM_BusType::COMM_BUS_TYPE_LIN){
 			return LinSMPtr->GetCurrentComMode(Channel.SMId, Mode);
 		}else if(Channel.BusType == ComM_BusType::COMM_BUS_TYPE_FR){

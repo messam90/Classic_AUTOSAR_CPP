@@ -34,8 +34,8 @@ LdCom::IpdusType Configure(){
 	LdCom::RxIndicationType AppRxInd = std::bind(&App::App::RxIndication, &(*AppPtr), std::placeholders::_1);
 	LdCom::TxConfirmationType AppTxconfirm = std::bind(&App::App::TxConfirmation, *(&AppPtr), std::placeholders::_1);
 	LdCom::TriggerTransmitType AppTriggerTansmit = std::bind(&App::App::TriggerTransmit, *(&AppPtr), std::placeholders::_1);
-	LdCom::IpduType TxIpdu(0, 0, LdCom::DirectionType::TRANSMIT, AppRxInd, AppTxconfirm, AppTriggerTansmit);
-	LdCom::IpduType RxIpdu(0, 0, LdCom::DirectionType::RECEIVE, AppRxInd, AppTxconfirm, AppTriggerTansmit);
+	std::shared_ptr<LdCom::IpduType> TxIpdu = std::make_shared<LdCom::IpduType>(0, 0, LdCom::DirectionType::TRANSMIT, AppRxInd, AppTxconfirm, AppTriggerTansmit);
+	std::shared_ptr<LdCom::IpduType> RxIpdu = std::make_shared<LdCom::IpduType>(0, 0, LdCom::DirectionType::RECEIVE, AppRxInd, AppTxconfirm, AppTriggerTansmit);
 	LdCom::IpdusType AllIpdus;
 	AllIpdus.AddIpdu(TxIpdu);
 	AllIpdus.AddIpdu(RxIpdu);
